@@ -1,6 +1,7 @@
 import base64  # noqa: I001
 
 import requests
+import re
 from flask import Blueprint, abort
 from flask import current_app as app
 from flask import redirect, render_template, request, session, url_for
@@ -353,7 +354,11 @@ def register():
 
         return redirect(url_for("challenges.listing"))
     else:
-        return render_template("register.html", errors=errors)
+        emailId = request.args.get("email", "").strip()
+        regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
+        if not re.fullmatch(regex, emailId):
+            emailId = ""
+        return render_template("register.html", errors=errors, emailId=emailId)
 
 
 @auth.route("/login", methods=["POST", "GET"])
